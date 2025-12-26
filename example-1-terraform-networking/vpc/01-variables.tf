@@ -1,7 +1,6 @@
-variable "aws_region" {
+variable "cidr_block" {
     type = string
-    default = "ap-south-1"
-    description = "The AWS region where resources will get created."
+    description = "The CIDR block for the VPC."
 }
 
 variable "vpc_name" {
@@ -9,9 +8,17 @@ variable "vpc_name" {
     description = "The name for the VPC."
 }
 
-variable "cidr_block" {
-    type = string
-    description = "The CIDR block for the VPC."
+variable "common_tags" {
+    type = object({})
+    default = {
+        Environment = "development"
+        Team = "tech"
+    }
+}
+
+variable "availability_zones" {
+    type = list(string)
+    description = "The AZ for the subnet."
 }
 
 variable "public_subnets" {
