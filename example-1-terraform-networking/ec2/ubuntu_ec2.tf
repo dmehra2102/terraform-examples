@@ -5,6 +5,8 @@ resource "aws_instance" "ubuntu_instance" {
     key_name               = var.access_key_name
     vpc_security_group_ids = toset(var.security_groups)
 
+    user_data = var.user_data_script
+
     tags = {
         Name = "ubuntu_ec2_instance"
     }

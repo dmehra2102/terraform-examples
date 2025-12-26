@@ -18,4 +18,5 @@ module "ubuntu_ec2" {
     access_key_name = "youtube-aws-course-key"
     subnet_id = module.vpc.public_subnet_ids[0]
     security_groups = [module.vpc.allow_only_ssh_ipv4_sg_id, module.vpc.allow_ssh_http_https_ipv4_sg_id]
+    user_data_script = templatefile("./user-script/apache.sh",{})
 }

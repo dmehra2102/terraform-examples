@@ -22,3 +22,8 @@ variable "security_groups" {
     type = list(string)
     description = "The list of security group for instance."
 }
+
+variable "user_data_script" {
+    type = string
+    description = "The User Data Script you want to configure inside EC2 instance"
+}
