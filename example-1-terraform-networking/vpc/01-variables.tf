@@ -30,3 +30,23 @@ variable "private_subnets" {
     type = list(string)
     description = "The list of private subnets."
 }
+
+variable "igw_name" {
+    type = string
+    description = "The name of internet gateway for the VPC."
+}
+
+variable "public_route_table_name" {
+    type = string
+    description = "The Name for the public route table"
+}
+
+variable "private_route_table_name" {
+    type = string
+    description = "The Name for the private route table"
+}
+
+variable "nat_gateway_name" {
+    type = string
+    description = "The name of the NAT Gateway."
+}

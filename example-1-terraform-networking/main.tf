@@ -2,7 +2,11 @@ module "vpc" {
     source = "./vpc"
     vpc_name = var.vpc_name
     cidr_block = var.cidr_block
-    availability_zones = data.aws_availability_zones.availability_zones.names
     public_subnets = var.public_subnets
     private_subnets = var.private_subnets
+    availability_zones = data.aws_availability_zones.availability_zones.names
+    igw_name = var.igw_name
+    public_route_table_name = var.public_route_table_name
+    private_route_table_name = var.private_route_table_name
+    nat_gateway_name = var.nat_gateway_name
 }

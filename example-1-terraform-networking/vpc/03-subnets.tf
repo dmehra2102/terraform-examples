@@ -1,5 +1,5 @@
 resource "aws_subnet" "my_vpc_public_subnets" {
-    vpc_id = aws_vpc.my-vpc.id
+    vpc_id = aws_vpc.my_vpc.id
     count = length(var.public_subnets)
 
     map_public_ip_on_launch = true
@@ -12,7 +12,7 @@ resource "aws_subnet" "my_vpc_public_subnets" {
 }
 
 resource "aws_subnet" "my_vpc_private_subnets" {
-    vpc_id = aws_vpc.my-vpc.id
+    vpc_id = aws_vpc.my_vpc.id
     count = length(var.private_subnets)
 
     map_public_ip_on_launch = false
