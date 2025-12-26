@@ -5,3 +5,11 @@ output "availability_zones" {
 output "security_groups_name" {
     value = [ module.vpc.allow_only_ssh_ipv4_sg_name, module.vpc.allow_ssh_http_https_ipv4_sg_name]
 }
+
+output "ubuntu_EC2_id" {
+    value = module.ubuntu_ec2.ubuntu_EC2_id
+}
+
+output "ubuntu_EC2_instance_public_ip" {
+    value = module.ubuntu_ec2.ubuntu_EC2_instance_public_ip
+}

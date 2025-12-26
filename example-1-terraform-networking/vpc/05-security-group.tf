@@ -6,7 +6,7 @@ resource "aws_security_group" "allow_only_ssh_ipv4" {
     ingress {
         to_port = 22
         from_port = 22
-        protocol = "ssh"
+        protocol = "tcp"
         cidr_blocks = ["0.0.0.0/0"]
         description = "All SSH inbound traffic"
     }
@@ -27,7 +27,7 @@ resource "aws_security_group" "allow_ssh_http_https_ipv4" {
     ingress {
         to_port = 22
         from_port = 22
-        protocol = "ssh"
+        protocol = "tcp"
         cidr_blocks = ["0.0.0.0/0"]
         description = "All SSH inbound traffic"
     }
@@ -36,6 +36,7 @@ resource "aws_security_group" "allow_ssh_http_https_ipv4" {
         to_port = 80
         from_port = 80
         protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
         description = "All HTTP inbound traffic"
     }
 
@@ -43,6 +44,7 @@ resource "aws_security_group" "allow_ssh_http_https_ipv4" {
         to_port = 443
         from_port = 443
         protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
         description = "All HTTPs inbound traffic"
     }
 

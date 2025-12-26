@@ -43,3 +43,8 @@ variable "nat_gateway_name" {
     type = string
     description = "The name of the NAT Gateway."
 }
+
+variable "instance_type" {
+    type = string
+    description = "Instance type to use for the instance."
+}

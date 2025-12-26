@@ -10,3 +10,12 @@ module "vpc" {
     private_route_table_name = var.private_route_table_name
     nat_gateway_name = var.nat_gateway_name
 }
+
+module "ubuntu_ec2" {
+    source = "./ec2"
+    instance_type = var.instance_type
+    instance_ami = data.aws_ami.ubuntu_ami.id
+    access_key_name = "youtube-aws-course-key"
+    subnet_id = module.vpc.public_subnet_ids[0]
+    security_groups = [module.vpc.allow_only_ssh_ipv4_sg_id, module.vpc.allow_ssh_http_https_ipv4_sg_id]
+}
