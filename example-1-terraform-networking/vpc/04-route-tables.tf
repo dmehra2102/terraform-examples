@@ -23,8 +23,8 @@ resource "aws_route_table" "my_vpc_public_route_table" {
 
 # Create Public Route Table Association wiht Public subnets
 resource "aws_route_table_association" "my_vpc_public_route_table_association" {
-    count = length(var.public_subnets)
-    subnet_id = var.public_subnets[count.index]
+    count = length(aws_subnet.my_vpc_public_subnets)
+    subnet_id = aws_subnet.my_vpc_public_subnets[count.index].id
     route_table_id = aws_route_table.my_vpc_public_route_table.id
 }
 
@@ -40,7 +40,7 @@ resource "aws_eip" "nat_eip" {
 # Create NAT Gateway with Elastic IP
 resource "aws_nat_gateway" "my_vpc_nat_gateway" {
     allocation_id = aws_eip.nat_eip.id
-    subnet_id     = var.public_subnets[0]
+    subnet_id     = aws_subnet.my_vpc_public_subnets[0].id
 
     tags = {
         Name = var.nat_gateway_name
@@ -67,7 +67,7 @@ resource "aws_route_table" "my_vpc_private_route_table" {
 
 # Create private route table association
 resource "aws_route_table_association" "my_vpc_private_route_table_association" {
-    count = length(var.private_subnets)
-    subnet_id = var.private_subnets[count.index]
+    count = length(aws_subnet.my_vpc_private_subnets)
+    subnet_id = aws_subnet.my_vpc_private_subnets[count.index].id
     route_table_id = aws_route_table.my_vpc_private_route_table.id
 }

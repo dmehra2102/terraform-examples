@@ -1,8 +1,8 @@
 aws_region = "ap-south-1"
 vpc_name = "my-vpc"
 cidr_block = "10.0.0.0/16"
-public_subnets = [ "10.0.1.0/24", "10.0.2.0/24" ]
-private_subnets = [ "10.0.51.0/24", "10.0.52.0/24" ]
+public_subnets_cidr = [ "10.0.1.0/24", "10.0.2.0/24" ]
+private_subnets_cidr = [ "10.0.51.0/24", "10.0.52.0/24" ]
 igw_name = "my-vpc-igw"
 public_route_table_name = "my-vpc-public-route-table"
 private_route_table_name = "my-vpc-private-route-table"
