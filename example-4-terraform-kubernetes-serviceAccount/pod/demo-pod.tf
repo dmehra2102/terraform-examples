@@ -7,6 +7,7 @@ resource "kubernetes_pod_v1" "demo_pod" {
     }
 
     spec {
+        service_account_name = var.service_account_name
         container {
             name = "aws-cli-container"
             image = "amazon/aws-cli"
