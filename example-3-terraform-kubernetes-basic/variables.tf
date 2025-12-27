@@ -1,0 +1,70 @@
+variable "aws_region" {
+    type = string
+    default = "ap-south-1"
+    description = "The AWS region where resources will get created."
+}
+
+variable "vpc_name" {
+    type = string
+    description = "The name for the VPC."
+}
+
+variable "cidr_block" {
+    type = string
+    description = "The CIDR block for the VPC."
+}
+
+variable "public_subnets_cidr" {
+    type = list(string)
+    description = "The list of public subnets."
+}
+
+variable "private_subnets_cidr" {
+    type = list(string)
+    description = "The list of private subnets."
+}
+
+variable "igw_name" {
+    type = string
+    description = "The name of internet gateway for the VPC."
+}
+
+variable "public_route_table_name" {
+    type = string
+    description = "The Name for the public route table"
+}
+
+variable "private_route_table_name" {
+    type = string
+    description = "The Name for the private route table"
+}
+
+variable "nat_gateway_name" {
+    type = string
+    description = "The name of the NAT Gateway."
+}
+
+variable "instance_type" {
+    type = string
+    description = "Instance type to use for the instance."
+}
+
+variable "eks_cluster_name" {
+    type = string
+    description = "The name of the EKS Cluster."
+}
+
+variable "eks_version" {
+    type = string
+    description = "Desired Kubernetes master version."
+}
+
+variable "worker_node_ami_type" {
+    type = string
+    description = "Type of Amazon Machine Image (AMI) associated with the EKS Node Group."
+}
+
+variable "worker_node_instance_types" {
+    type = list(string)
+    description = "List of instance types associated with the EKS Node Group."
+}
