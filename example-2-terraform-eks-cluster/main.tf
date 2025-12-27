@@ -10,3 +10,10 @@ module "vpc" {
     private_route_table_name = var.private_route_table_name
     nat_gateway_name = var.nat_gateway_name
 }
+
+module "eks_cluster" {
+    source = "./eks-cluster"
+    eks_version = var.eks_version
+    eks_cluster_name = var.eks_cluster_name
+    subnet_ids = module.vpc.private_subnet_ids
+}
