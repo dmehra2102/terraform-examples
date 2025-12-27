@@ -22,6 +22,14 @@ output "eks_cluster_api_server_endpoint" {
     value = module.eks_cluster.eks_cluster_api_server_endpoint
 }
 
-output "eks_woker_node_group_id" {
-    value = module.eks_cluster.eks_woker_node_group_id
+output "eks_worker_node_group_id" {
+    value = module.eks_cluster.eks_worker_node_group_id
+}
+
+output "eks_cluster_id" {
+    value = module.eks_cluster.eks_cluster_id
+}
+
+output "eks_certificate_authority_data" {
+    value = module.eks_cluster.eks_certificate_authority_data
 }

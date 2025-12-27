@@ -14,7 +14,7 @@ resource "kubernetes_pod_v1" "basic_pod" {
             image_pull_policy = "IfNotPresent"
             port {
                 container_port = "80"
-                protocol = "tcp"
+                protocol = "TCP"
                 name = "http"
             }
             resources {

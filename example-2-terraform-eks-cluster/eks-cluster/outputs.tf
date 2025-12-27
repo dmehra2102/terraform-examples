@@ -14,6 +14,14 @@ output "eks_cluster_api_server_endpoint" {
     value = aws_eks_cluster.eks_cluster.endpoint
 }
 
-output "eks_woker_node_group_id" {
+output "eks_worker_node_group_id" {
     value = aws_eks_node_group.private_worker_node_group.id
+}
+
+output "eks_cluster_id" {
+    value = aws_eks_cluster.eks_cluster.id
+}
+
+output "eks_certificate_authority_data" {
+    value = aws_eks_cluster.eks_cluster.certificate_authority[0].data
 }

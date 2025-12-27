@@ -3,7 +3,7 @@ resource "kubernetes_deployment_v1" "demo_deployment" {
         name = "dmeo-deployment"
         labels = {
             Environment = "development"
-            ResourceType = "apps/v1"
+            ResourceType = "apps"
         }
     }
 

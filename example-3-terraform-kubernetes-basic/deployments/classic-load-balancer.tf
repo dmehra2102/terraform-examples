@@ -8,7 +8,7 @@ resource "kubernetes_service_v1" "lb_service" {
         }
         port {
             port        = 80
-            target_port = 80
+            target_port = 8080
         }
 
         type = "LoadBalancer"
