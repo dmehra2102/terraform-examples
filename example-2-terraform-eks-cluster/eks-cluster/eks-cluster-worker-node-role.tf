@@ -30,8 +30,3 @@ resource "aws_iam_role_policy_attachment" "eks_AmazonEC2ContainerRegistryReadOnl
     role = aws_iam_role.eks_cluster_worker_node_role.id
     policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
-
-resource "aws_iam_role_policy_attachment" "eks_AmazonEBSCSIDriverPolicy_policy_attachment" {
-    role = aws_iam_role.eks_cluster_worker_node_role.id
-    policy_arn = "arn:aws:iam::aws:policy/AmazonEBSCSIDriverPolicy"
-}

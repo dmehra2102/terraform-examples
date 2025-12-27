@@ -13,3 +13,7 @@ output "eks_cluster_arn" {
 output "eks_cluster_api_server_endpoint" {
     value = aws_eks_cluster.eks_cluster.endpoint
 }
+
+output "eks_woker_node_group_id" {
+    value = aws_eks_node_group.private_worker_node_group.id
+}
