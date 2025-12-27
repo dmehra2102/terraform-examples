@@ -15,5 +15,8 @@ module "eks_cluster" {
     source = "./eks-cluster"
     eks_version = var.eks_version
     eks_cluster_name = var.eks_cluster_name
-    subnet_ids = module.vpc.private_subnet_ids
+    control_plane_subnet_ids = module.vpc.private_subnet_ids
+    worker_node_subnet_ids = module.vpc.private_subnet_ids
+    worker_node_ami_type = var.worker_node_ami_type
+    worker_node_instance_types = var.worker_node_instance_types
 }

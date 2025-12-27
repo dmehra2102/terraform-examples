@@ -8,7 +8,7 @@ resource "aws_eks_cluster" "eks_cluster" {
     }
 
     vpc_config {
-        subnet_ids = var.subnet_ids
+        subnet_ids = var.control_plane_subnet_ids
     }
 
     enabled_cluster_log_types = ["api","audit","authenticator","controllerManager","scheduler"]
