@@ -33,3 +33,11 @@ output "eks_cluster_id" {
 output "eks_certificate_authority_data" {
     value = module.eks_cluster.eks_certificate_authority_data
 }
+
+output "aws_iam_openid_connect_provider_arn" {
+    value = module.eks_cluster.aws_iam_openid_connect_provider_arn
+}
+
+output "aws_iam_openid_connect_provider_extract_from_arn" {
+    value = module.eks_cluster.aws_iam_openid_connect_provider_extract_from_arn
+}

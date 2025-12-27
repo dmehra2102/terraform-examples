@@ -25,3 +25,11 @@ output "eks_cluster_id" {
 output "eks_certificate_authority_data" {
     value = aws_eks_cluster.eks_cluster.certificate_authority[0].data
 }
+
+output "aws_iam_openid_connect_provider_arn" {
+    value = aws_iam_openid_connect_provider.oidc_provider.arn
+}
+
+output "aws_iam_openid_connect_provider_extract_from_arn" {
+    value = local.aws_iam_oidc_connect_provider_extract_from_arn
+}
