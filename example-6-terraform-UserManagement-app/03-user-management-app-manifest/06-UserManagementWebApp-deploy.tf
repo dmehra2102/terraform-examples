@@ -31,11 +31,11 @@ resource "kubernetes_deployment_v1" "usermgmt_webapp" {
             }
             env {
                 name = "DB_HOSTNAME"
-                value = kubernetes_service_v1.mysql_clusterip_service.metadata.0.name 
+                value = kubernetes_service_v1.mysql_cluster_svc.metadata.0.name 
             }
             env {
                 name = "DB_PORT"
-                value = kubernetes_service_v1.mysql_clusterip_service.spec.0.port.0.port
+                value = kubernetes_service_v1.mysql_cluster_svc.spec.0.port.0.port
             }
             env {
                 name = "DB_NAME"
