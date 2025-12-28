@@ -8,7 +8,7 @@ resource "aws_eks_cluster" "my_eks_cluster" {
     }
 
     kubernetes_network_config {
-        service_ipv4_cidr = "172.0.0.0/16"
+        service_ipv4_cidr = "172.20.0.0/16"
     }
 
     enabled_cluster_log_types = ["api","audit","authenticator","controllerManager","scheduler"]
