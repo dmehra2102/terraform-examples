@@ -1,0 +1,1 @@
+# Giving admin accss to the EKS Cluster : aws-auth Config
