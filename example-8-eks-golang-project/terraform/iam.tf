@@ -104,3 +104,23 @@ resource "aws_iam_role_policy_attachment" "alb_controller_policy" {
     role = aws_iam_role.alb_controller.name
     policy_arn = "arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess"
 }
+
+# EKS Access Entries (RBAC)
+resource "aws_eks_access_entry" "cluster_admin" {
+    cluster_name = aws_eks_cluster.main.name
+    principal_arn = var.admin_iam_user_arn
+    type = "STANDARD"
+
+    tags = {
+        Name = "cluster-admin"
+    }
+}
+
+resource "aws_eks_access_policy_association" "cluster_admin_policy" {
+    cluster_name = aws_eks_cluster.main.name
+    principal_arn = var.admin_iam_user_arn
+    policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+    access_scope {
+        type = "cluster"
+    }
+}
