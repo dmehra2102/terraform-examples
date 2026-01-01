@@ -13,7 +13,7 @@ data "aws_partition" "current" {}
 resource "aws_iam_openid_connect_provider" "eks" {
     url = local.eks_cluster_provider_url
     client_id_list = ["sts.${data.aws_partition.current.dns_suffix}"]
-    thumbprint_list = [ data.tls_certificate.eks.certificates.sha1_fingerprint ]
+    thumbprint_list = [ data.tls_certificate.eks.certificates[0].sha1_fingerprint ]
 }
 
 # Role For Golang-App to access s3 and IAM resources
@@ -87,7 +87,7 @@ resource "aws_iam_role" "alb_controller" {
                 Effect = "Allow"
                 Action = "sts:AssumeRoleWithWebIdentity"
                 Principal = {
-                    Federated = aws_iam_openid_connect_provider.arn
+                    Federated = aws_iam_openid_connect_provider.eks.arn
                 }
                 Condition  = {
                     StringEquals = {

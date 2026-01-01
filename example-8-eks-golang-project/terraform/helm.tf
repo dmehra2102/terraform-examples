@@ -41,4 +41,6 @@ resource "helm_release" "aws_load_balancer_controller" {
             value = kubernetes_service_account_v1.aws_load_balancer_controller.metadata.0.name
         }
     ]
+
+    depends_on = [ aws_iam_role_policy_attachment.alb_controller_policy ]
 }
