@@ -16,6 +16,7 @@ resource "aws_iam_openid_connect_provider" "eks" {
     thumbprint_list = [ data.tls_certificate.eks.certificates.sha1_fingerprint ]
 }
 
+# Role For Golang-App to access s3 and IAM resources
 resource "aws_iam_role" "golang_app" {
     name = "${var.project_name}-golang-app-role"
 
@@ -55,7 +56,7 @@ resource "aws_iam_role_policy" "golang_app_policy" {
                     "s3:List*",
                     "s3:Describe*"
                 ]
-                Resource : "*"
+                Resource = "*"
             },
             {
                 Sid = "IAMAcess"
@@ -68,8 +69,38 @@ resource "aws_iam_role_policy" "golang_app_policy" {
                     "iam:ListRolePolicies",
                     "iam:GetRolePolicy"
                 ]
-                Resource : "*"
+                Resource = "*"
             }
         ]
     })
+}
+
+# IAM Role for AWS Load Balancer Controller
+resource "aws_iam_role" "alb_controller" {
+    name = "${var.project_name}-alb-controller"
+
+    assume_role_policy = jsonencode({
+        Version = "2012-10-17"
+        Statement = [
+            {
+                Sid = "EC2Access"
+                Effect = "Allow"
+                Action = "sts:AssumeRoleWithWebIdentity"
+                Principal = {
+                    Federated = aws_iam_openid_connect_provider.arn
+                }
+                Condition  = {
+                    StringEquals = {
+                        "${replace(aws_iam_openid_connect_provider.eks.url, "https://", "")}:sub" = "system:serviceaccount:kube-system:aws-load-balancer-controller"
+                        "${replace(aws_iam_openid_connect_provider.eks.url, "https://", "")}:aud" = "sts.amazonaws.com"
+                    }
+                }
+            }
+        ]
+    })
+}
+
+resource "aws_iam_role_policy_attachment" "alb_controller_policy" {
+    role = aws_iam_role.alb_controller.name
+    policy_arn = "arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess"
 }
