@@ -52,3 +52,41 @@ resource "aws_eks_cluster" "main" {
 
     tags = local.common_tags
 }
+
+# EKS Workers Node Group
+resource "aws_eks_node_group" "main" {
+    cluster_name = aws_eks_cluster.main.name
+    node_role_arn = aws_iam_role.eks_node_role.arn
+    node_group_name = "${local.cluster_name}-main-node-group"
+    version = var.kubernetes_version
+    subnet_ids = var.private_subnet_ids
+
+    scaling_config {
+        desired_size    = var.desired_node_count
+        max_size        = var.desired_node_count + 2
+        min_size        = max(1, var.desired_node_count - 1)
+    }
+
+    update_config {
+        max_unavailable_percentage = 50
+    }
+
+    instance_types = var.node_instance_types
+    disk_size      = var.node_disk_size
+
+    # Use latest EKS optimized AMI
+    ami_type = "AL2_x86_64"
+
+    depends_on = [ 
+        aws_iam_role_policy_attachment.eks_container_registry_policy,
+        aws_iam_role_policy_attachment.eks_worker_node_policy,
+        aws_iam_role_policy_attachment.eks_cni_policy
+    ]
+
+    tags = merge(
+        local.common_tags,
+        {
+        Name = "${local.cluster_name}-node-group"
+        }
+    )
+}
