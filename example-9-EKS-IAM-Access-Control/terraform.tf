@@ -21,3 +21,32 @@ terraform {
         region = "ap-south-1"
     }
 }
+
+provider "aws" {
+    region = var.aws_region
+    default_tags {
+        tags = var.tags
+    }
+}
+
+provider "kubernetes" {
+    host = ""
+    cluster_ca_certificate = ""
+    token = ""
+}
+
+provider "helm" {
+    kubernetes = {
+        host = ""
+        cluster_ca_certificate = ""
+        token = ""
+    }
+}
+
+data "aws_eks_cluster" "main" {
+    name = ""
+}
+
+data "aws_eks_cluster_auth" "cluster_auth" {
+    name = ""
+}
