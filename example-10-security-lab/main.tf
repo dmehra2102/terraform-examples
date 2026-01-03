@@ -48,5 +48,12 @@ resource "aws_iam_role" "junior_dev" {
 
 data "aws_caller_identity" "current" {}
 
+resource "aws_eks_access_entry" "junior_dev_access" {
+    cluster_name = module.eks.cluster_name
+    principal_arn = aws_iam_role.junior_dev.arn
+    type = "STANDARD"
+    kubernetes_groups = ["k8s-viewers"]
+}
+
 output "cluster_name" { value = module.eks.cluster_name }
 output "junior_dev_role_arn" { value = aws_iam_role.junior_dev.arn }
