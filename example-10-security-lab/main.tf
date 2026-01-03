@@ -55,5 +55,34 @@ resource "aws_eks_access_entry" "junior_dev_access" {
     kubernetes_groups = ["k8s-viewers"]
 }
 
+resource "kubernetes_cluster_role_v1" "viewer_role" {
+    metadata {
+        name = "cluster-view-role"
+    }
+    rule {
+        api_groups = [""]
+        resources = [ "pods", "nodes", "services" ]
+        verbs = [ "get", "list", "watch" ]
+    }
+}
+
+resource "kubernetes_cluster_role_binding_v1" "bind_viewer" {
+    metadata {
+        name = "bind-viewer"
+    }
+
+    role_ref {
+        name = kubernetes_cluster_role_v1.viewer_role.metadata[0].name
+        kind = "ClusterRole"
+        api_group = "rbac.authorization.k8s.io"
+    }
+
+    subject {
+        kind = "Group"
+        name = "k8s-viewers"
+        api_group = "rbac.authorization.k8s.io"
+    }
+}
+
 output "cluster_name" { value = module.eks.cluster_name }
 output "junior_dev_role_arn" { value = aws_iam_role.junior_dev.arn }
