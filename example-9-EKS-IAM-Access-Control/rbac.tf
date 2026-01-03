@@ -112,7 +112,7 @@ resource "kubernetes_cluster_role_v1" "readers" {
 }
 
 # DevOps ClusterRole
-resource "kubernetes_cluster_role_v1" "name" {
+resource "kubernetes_cluster_role_v1" "devops" {
     metadata {
         name = "${local.rbac_groups.devops}-role"
     }
@@ -129,4 +129,176 @@ resource "kubernetes_cluster_role_v1" "name" {
     }
 
     depends_on = [aws_eks_cluster.main]
+}
+
+# ClusterRoleBinding
+resource "kubernetes_cluster_role_binding_v1" "admin" {
+    metadata {
+        name = "${local.rbac_groups.admin}-binding"
+    }
+
+    role_ref {
+        kind = "ClusterRole"
+        api_group = "rbac.authorization.k8s.io"
+        name = kubernetes_cluster_role_v1.admin.metadata.0.name
+    }
+
+    subject {
+        kind = "Group"
+        name = local.rbac_groups.admin
+    }
+    
+    depends_on = [ aws_eks_cluster.main ]
+}
+
+resource "kubernetes_cluster_role_binding_v1" "dev" {
+    metadata {
+        name = "${local.rbac_groups.dev}-binding"
+    }
+
+    role_ref {
+        kind = "ClusterRole"
+        api_group = "rbac.authorization.k8s.io"
+        name = kubernetes_cluster_role_v1.developer.metadata.0.name
+    }
+
+    subject {
+        kind = "Group"
+        name = local.rbac_groups.dev
+    }
+    
+    depends_on = [ aws_eks_cluster.main ]
+}
+
+resource "kubernetes_cluster_role_binding_v1" "devops" {
+    metadata {
+        name = "${local.rbac_groups.devops}-binding"
+    }
+
+    role_ref {
+        kind = "ClusterRole"
+        api_group = "rbac.authorization.k8s.io"
+        name = kubernetes_cluster_role_v1.devops.metadata.0.name
+    }
+
+    subject {
+        kind = "Group"
+        name = local.rbac_groups.devops
+    }
+    
+    depends_on = [ aws_eks_cluster.main ]
+}
+
+resource "kubernetes_cluster_role_binding_v1" "readers" {
+    metadata {
+        name = "${local.rbac_groups.readers}-binding"
+    }
+
+    role_ref {
+        kind = "ClusterRole"
+        api_group = "rbac.authorization.k8s.io"
+        name = kubernetes_cluster_role_v1.readers.metadata.0.name
+    }
+
+    subject {
+        kind = "Group"
+        name = local.rbac_groups.readers
+    }
+    
+    depends_on = [ aws_eks_cluster.main ]
+}
+
+# Namespace Specific Developer Role
+resource "kubernetes_role_v1" "dev_ns" {
+    metadata {
+        name      = "developers-role"
+        namespace = kubernetes_namespace_v1.dev.metadata[0].name
+    }
+
+    rule {
+        api_groups = ["apps"]
+        resources  = ["deployments", "statefulsets", "daemonsets"]
+        verbs      = ["*"]
+    }
+
+    rule {
+        api_groups = [""]
+        resources  = ["pods", "pods/log", "services"]
+        verbs      = ["*"]
+    }
+
+    rule {
+        api_groups = [""]
+        resources  = ["configmaps", "secrets"]
+        verbs      = ["get", "list", "watch"]
+    }
+
+    depends_on = [kubernetes_namespace.dev]
+}
+
+resource "kubernetes_role_binding" "dev_ns" {
+    metadata {
+        name      = "dev-binding"
+        namespace = kubernetes_namespace_v1.dev.metadata[0].name
+    }
+
+    role_ref {
+        api_group = "rbac.authorization.k8s.io"
+        kind      = "Role"
+        name      = kubernetes_role_v1.dev_ns.metadata[0].name
+    }
+
+    subject {
+        kind = "Group"
+        name = local.rbac_groups.dev
+    }
+
+    depends_on = [kubernetes_role_v1.dev_ns]
+}
+
+resource "kubernetes_role_v1" "stag_ns" {
+    metadata {
+        name      = "stag-developers-role"
+        namespace = kubernetes_namespace_v1.staging.metadata[0].name
+    }
+
+    rule {
+        api_groups = ["apps"]
+        resources  = ["deployments", "statefulsets", "daemonsets"]
+        verbs      = ["*"]
+    }
+
+    rule {
+        api_groups = [""]
+        resources  = ["pods", "pods/log", "services"]
+        verbs      = ["*"]
+    }
+
+    rule {
+        api_groups = [""]
+        resources  = ["configmaps", "secrets"]
+        verbs      = ["get", "list", "watch"]
+    }
+
+    depends_on = [kubernetes_namespace_v1.staging]
+}
+
+resource "kubernetes_role_binding" "stag_ns" {
+    metadata {
+        name      = "stag-binding"
+        namespace = kubernetes_namespace_v1.staging.metadata.0.name
+    }
+
+    role_ref {
+        api_group = "rbac.authorization.k8s.io"
+        kind      = "Role"
+        name      = kubernetes_role_v1.dev_ns.metadata[0].name
+    }
+
+    subject {
+        kind = "Group"
+        name = local.rbac_groups.dev
+    }
+
+    depends_on = [kubernetes_role_v1.stag_ns]
 }
