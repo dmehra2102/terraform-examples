@@ -32,13 +32,13 @@ variable "availability_zones" {
     description = "Availability zones"
 }
 
-variable "public_subnet_cidr" {
+variable "public_subnet_cidrs" {
     type = list(string)
     default = [ "10.0.1.0/24", "10.0.2.0/24" ]
     description = "Public subnet CIDR blocks"
 }
 
-variable "private_subnet_cidr" {
+variable "private_subnet_cidrs" {
     type = list(string)
     default = [ "10.0.10.0/24", "10.0.11.0/24" ]
     description = "Private subnet CIDR blocks"
