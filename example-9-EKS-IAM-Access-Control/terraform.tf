@@ -30,23 +30,23 @@ provider "aws" {
 }
 
 provider "kubernetes" {
-    host = ""
-    cluster_ca_certificate = ""
-    token = ""
+    host = aws_eks_cluster.main.endpoint
+    cluster_ca_certificate = base64decode(aws_eks_cluster.main.certificate_authority[0].data)
+    token = data.aws_eks_cluster_auth.cluster_auth.token
 }
 
 provider "helm" {
     kubernetes = {
-        host = ""
-        cluster_ca_certificate = ""
-        token = ""
+        host = aws_eks_cluster.main.endpoint
+        cluster_ca_certificate = base64decode(aws_eks_cluster.main.certificate_authority[0].data)
+        token = data.aws_eks_cluster_auth.cluster_auth.token
     }
 }
 
 data "aws_eks_cluster" "main" {
-    name = ""
+    name = aws_eks_cluster.main.name
 }
 
 data "aws_eks_cluster_auth" "cluster_auth" {
-    name = ""
+    name = aws_eks_cluster.main.name
 }

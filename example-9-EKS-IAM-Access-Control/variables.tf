@@ -49,12 +49,6 @@ variable "cluster_endpoint_private_access" {
     description = "Enable private access to cluster endpoint"
 }
 
-variable "enable_cluster_autoscaler" {
-    description = "Enable cluster autoscaler addon"
-    type        = bool
-    default     = true
-}
-
 variable "enable_vpc_cni" {
     description = "Enable AWS VPC CNI addon"
     type        = bool
@@ -64,6 +58,11 @@ variable "enable_vpc_cni" {
 variable "vpc_id" {
     description = "VPC ID for EKS cluster"
     type        = string
+}
+
+variable "vpc_cidr_block" {
+    description = "The CIDR block for VPC"
+    type = string
 }
 
 variable "private_subnet_ids" {

@@ -233,10 +233,10 @@ resource "kubernetes_role_v1" "dev_ns" {
         verbs      = ["get", "list", "watch"]
     }
 
-    depends_on = [kubernetes_namespace.dev]
+    depends_on = [kubernetes_namespace_v1.dev]
 }
 
-resource "kubernetes_role_binding" "dev_ns" {
+resource "kubernetes_role_binding_v1" "dev_ns" {
     metadata {
         name      = "dev-binding"
         namespace = kubernetes_namespace_v1.dev.metadata[0].name
@@ -283,7 +283,7 @@ resource "kubernetes_role_v1" "stag_ns" {
     depends_on = [kubernetes_namespace_v1.staging]
 }
 
-resource "kubernetes_role_binding" "stag_ns" {
+resource "kubernetes_role_binding_v1" "stag_ns" {
     metadata {
         name      = "stag-binding"
         namespace = kubernetes_namespace_v1.staging.metadata.0.name

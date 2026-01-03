@@ -3,7 +3,7 @@ resource "aws_iam_role" "eks_cluster_role" {
     name = "${local.cluster_name}-cluster-role"
     assume_role_policy = jsonencode({
         Version = "2012-10-17"
-        Satement = [
+        Statement = [
             {
                 Sid     = "EksClusterRole"
                 Action  = "sts:AssumeRole"
@@ -33,7 +33,7 @@ resource "aws_iam_role" "eks_node_role" {
     name = "${local.cluster_name}-node-role"
     assume_role_policy = jsonencode({
         Version = "2012-10-17"
-        Satement = [
+        Statement = [
             {
                 Sid     = "EksClusterRole"
                 Action  = "sts:AssumeRole"
@@ -153,24 +153,27 @@ resource "aws_iam_group_policy" "eks_devops_policy" {
     })
 }
 
-data "aws_caller_identity" "current" {
-  
-}
+data "aws_caller_identity" "current" {}
 
 resource "aws_iam_role" "eks_admin_role" {
     name_prefix = "${local.cluster_name}eks-admin-role"
     assume_role_policy = jsonencode({
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Sid    = "AllowAdminGroupAssumeRole"
-        Principal = {
-            AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
-        }
-        Condition = {
-            StringEquals = {
-                "sts:ExternalId" = "${local.cluster_name}-admin"
+        Version = "2012-10-17"
+        Statement = [
+            {
+                Action = "sts:AssumeRole"
+                Effect = "Allow"
+                Sid    = "AllowAdminGroupAssumeRole"
+                Principal = {
+                    AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+                }
+                Condition = {
+                    StringEquals = {
+                        "sts:ExternalId" = "${local.cluster_name}-admin"
+                    }
+                }
             }
-        }
+        ]
     })
 
     tags = local.common_tags
@@ -179,19 +182,24 @@ resource "aws_iam_role" "eks_admin_role" {
 resource "aws_iam_role" "eks_developer_role" {
     name_prefix = "${local.cluster_name}eks-developer-role"
     assume_role_policy = jsonencode({
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Sid    = "AllowDeveloperGroupAssumeRole"
-        Principal = {
-            AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
-        }
+        Version = "2012-10-17"
+        Statement = [
+            {
+                Action = "sts:AssumeRole"
+                Effect = "Allow"
+                Sid    = "AllowDeveloperGroupAssumeRole"
+                Principal = {
+                    AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+                }
+            }
+        ]
     })
 
     tags = local.common_tags
 }
 
 resource "aws_iam_role" "eks_reader_role" {
-    name_prefix = "${local.cluster_name}-reader-"
+    name_prefix = "${local.cluster_name}-reader"
 
     assume_role_policy = jsonencode({
         Version = "2012-10-17"

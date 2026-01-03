@@ -51,9 +51,9 @@ resource "aws_iam_role_policy_attachment" "vpc_cni_policy" {
 resource "aws_eks_addon" "vpc_cni" {
     cluster_name = aws_eks_cluster.main.name
     addon_name = "vpc-cni"
-    addon_version = data.aws_eks_addon_version.vpc_cni.version
+    addon_version = data.aws_eks_addon_version.vpc_cni[0].version
     resolve_conflicts_on_update = "OVERWRITE"
-    service_account_role_arn = aws_iam_role.vpc_cni_role.arn
+    service_account_role_arn = aws_iam_role.vpc_cni_role[0].arn
 
     tags = local.common_tags
 

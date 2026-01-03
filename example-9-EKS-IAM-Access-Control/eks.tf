@@ -4,6 +4,14 @@ resource "aws_security_group" "eks_cluster" {
     vpc_id = var.vpc_id
     description = "Security group for EKS cluster control plane"
 
+    ingress {
+        description = "kubectl access"
+        from_port   = 443
+        to_port     = 443
+        protocol    = "tcp"
+        cidr_blocks = [var.vpc_cidr_block]
+    }
+
     egress {
         cidr_blocks = [ "0.0.0.0/0" ]
         to_port = 0
