@@ -79,7 +79,7 @@ resource "aws_iam_group_policy" "admin_group" {
             Effect = "Allow"
             Action = "sts:AssumeRole"
             Resource = [
-                aws_iam_role.eks_admin_role.arn // Todo: Needs to Create This Role
+                aws_iam_role.eks_admin_role.arn
             ]
         }]
     })
