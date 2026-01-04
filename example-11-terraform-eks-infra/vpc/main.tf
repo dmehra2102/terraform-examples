@@ -95,7 +95,7 @@ resource "aws_route_table" "private" {
     }
 
     tags = merge(var.tags, {
-        Name = "${var.cluster_name}-private-rt"
+        Name = "${var.cluster_name}-private-rt-${count.index}"
     })
 }
 
