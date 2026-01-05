@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app1
+  namespace: production
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: app2
+  template:
+    metadata:
+      labels:
+        app: app2
+    spec:
+      containers:
+        - name: app2
+          image: public.ecr.aws/docker/library/httpd:2.4
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          env:
+            - name: APP_NAME
+              value: "app2"
+          volumeMounts:
+            - name: app2-html
+              mountPath: /usr/local/apache2/htdocs/
+      volumes:
+        - name: app2-html
+          configMap:
+            name: app2-html
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app2-html
+  namespace: production
+data:
+  index.html: |
+    <html><body><h1>App2</h1><p>Served by Apache</p></body></html>
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app2-svc
+  namespace: production
+spec:
+  selector:
+    app: app2
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
