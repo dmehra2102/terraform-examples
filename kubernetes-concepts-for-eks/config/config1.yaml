@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-config
+data:
+  DATABASE_HOST: "db.example.com"
+  FEATURE_FLAG: "true"

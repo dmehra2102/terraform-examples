@@ -28,4 +28,5 @@ module "eks" {
     enable_spot_instances = var.enable_spot_instances
     worker_instance_types = var.worker_instance_types
     private_subnet_ids = module.vpc.private_subnet_ids
+    vpc_cidr_block = var.vpc_cidr
 }

@@ -38,3 +38,7 @@ variable "node_disk_type" {
         error_message = "Disk type must be one of: gp2, gp3, io1, io2."
     }
 }
+
+variable "vpc_cidr_block" {
+    type = string
+}
