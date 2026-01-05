@@ -10,6 +10,6 @@ output "alb_controller_iam_role_arn" {
     value = aws_iam_role.alb_controller.arn
 }
 
-# output "alb_controller_helm_status" {
-#     value = helm_release.aws_lb_controller.status
-# }
+output "alb_controller_helm_status" {
+    value = helm_release.aws_lb_controller.status
+}

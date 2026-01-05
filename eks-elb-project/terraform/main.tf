@@ -69,7 +69,7 @@ resource "aws_iam_role" "alb_controller" {
                 }
                 Condition = {
                     StringEquals = {
-                        "${replace(module.eks.cluster_oidc_issuer, "https://", "")}:sub"  : "system:serviceaccount:${local.kube_system_sa_ns}:${local.kube_system_sa_name}"
+                        "${replace(module.eks.cluster_oidc_issuer_url, "https://", "")}:sub"  : "system:serviceaccount:${local.kube_system_sa_ns}:${local.kube_system_sa_name}"
                     }
                 }
             }
@@ -91,4 +91,46 @@ resource "aws_iam_policy" "elb_controller_iam_policy" {
 resource "aws_iam_role_policy_attachment" "alb_controller_policy" {
     role = aws_iam_role.alb_controller.name
     policy_arn = aws_iam_policy.elb_controller_iam_policy.arn
+}
+
+# ----------------------------------------
+# Kubernetes ServiceAccount for ALB controller (do not create role annotation here; we will annotate with IAM role ARN)
+# ----------------------------------------
+resource "kubernetes_service_account_v1" "alb_controller_sa" {
+    metadata {
+        name = local.kube_system_sa_name
+        namespace = local.kube_system_sa_ns
+        annotations = {
+            "eks.amazonaws.com/role-arn" = aws_iam_role.alb_controller.arn
+        }
+    }
+}
+
+# ------------------------------------------
+# Helm release: AWS Load Balancer Controller
+# ------------------------------------------
+resource "helm_release" "aws_lb_controller" {
+    name = "aws-load-balancer-controller"
+    repository = "https://aws.github.io/eks-charts"
+    chart      = "aws-load-balancer-controller"
+    namespace  = local.kube_system_sa_ns
+    create_namespace = false
+    version = "1.14.0"
+
+    values = [ 
+        yamlencode({
+            clusterName = module.eks.cluster_id
+            serviceAccount = {
+                create  = false
+                name    = kubernetes_service_account_v1.alb_controller_sa.metadata[0].name
+            }
+            region = var.region
+            vpcId  = module.vpc.vpc_id
+        })
+    ]
+
+    depends_on = [ 
+        kubernetes_service_account_v1.alb_controller_sa,
+        aws_iam_role_policy_attachment.alb_controller_policy
+    ]
 }
