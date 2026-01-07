@@ -1,0 +1,1 @@
+node_desired_capacity = 1
