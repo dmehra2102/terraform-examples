@@ -85,3 +85,99 @@ resource "kubernetes_role_binding_v1" "app_reader_binding" {
         name = kubernetes_role_v1.app_reader.metadata[0].name
     }
 }
+
+# Deployment (Dummy)
+resource "kubernetes_deployment_v1" "app" {
+    metadata {
+        name = var.app_name
+        namespace = kubernetes_namespace_v1.app.metadata[0].name
+        labels = {
+            "app" = var.app_name
+        }
+    }
+    spec {
+        replicas = var.replicas
+        selector {
+            match_labels = {
+            "app" = var.app_name
+            }
+        }
+        template {
+            metadata {
+            labels = {
+                "app" = var.app_name
+            }
+            }
+            spec {
+                service_account_name = kubernetes_service_account_v1.app.metadata[0].name
+                container {
+                    name  = var.app_name
+                    image = var.image
+
+                    port {
+                        container_port = 8080
+                    }
+
+                    resources {
+                        limits = {
+                        cpu    = "200m"
+                        memory = "256Mi"
+                        }
+                        requests = {
+                        cpu    = "100m"
+                        memory = "128Mi"
+                        }
+                    }
+
+                    liveness_probe {
+                        http_get {
+                            path = "/healthz"
+                            port = 8080
+                        }
+                        initial_delay_seconds = 5
+                        period_seconds = 10
+                    }
+
+                    readiness_probe {
+                        http_get {
+                            path = "/readyz"
+                            port = 8080
+                        }
+                        initial_delay_seconds = 5
+                        period_seconds        = 10
+                    }
+                }
+
+                security_context {
+                    run_as_non_root = true
+                    run_as_user = 1000
+                    fs_group = 2000
+                }
+            }
+        }
+    }
+}
+
+resource "kubernetes_service_v1" "app" {
+    metadata {
+        name = "${var.app_name}-svc"
+        namespace = kubernetes_namespace_v1.app.metadata[0].name
+        labels = {
+            "app" = var.app_name
+        }
+    }
+
+    spec {
+        selector = {
+            "app" = var.app_name
+        }
+
+        port {
+            name = "http"
+            port = 80
+            node_port = 8080
+        }
+
+        type = "NodePort"
+    }
+}
