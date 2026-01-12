@@ -181,3 +181,42 @@ resource "kubernetes_service_v1" "app" {
         type = "NodePort"
     }
 }
+
+# Ingress via ALB Controller
+resource "kubernetes_ingress_v1" "app" {
+    metadata {
+        name      = "${var.app_name}-ing"
+        namespace = kubernetes_namespace_v1.app.metadata[0].name
+        annotations = {
+            "kubernetes.io/ingress.class"                 = "alb"
+            "alb.ingress.kubernetes.io/scheme"            = var.alb_scheme
+            "alb.ingress.kubernetes.io/target-type"       = "ip"
+            "alb.ingress.kubernetes.io/listen-ports"      = "[{\"HTTP\":80}]"
+            "alb.ingress.kubernetes.io/healthcheck-path"  = "/readyz"
+            "alb.ingress.kubernetes.io/group.name"        = var.alb_group_name
+            "alb.ingress.kubernetes.io/load-balancer-attributes" = "idle_timeout.timeout_seconds=60"
+            "alb.ingress.kubernetes.io/subnets"           = join(",", var.public_subnet_ids)
+            "alb.ingress.kubernetes.io/security-groups"   = var.alb_sg_id
+        }
+    }
+
+    spec {
+        rule {
+            http {
+                path {
+                    path      = "/"
+                    path_type = "Prefix"
+
+                    backend {
+                        service {
+                            name = kubernetes_service_v1.app.metadata[0].name
+                        port {
+                            number = 80
+                        }
+                    }
+                }
+                }
+            }
+        }
+    }
+}
