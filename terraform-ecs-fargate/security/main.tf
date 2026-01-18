@@ -94,3 +94,181 @@ resource "aws_vpc_security_group_egress_rule" "ecs_task_egress" {
         Name = "allow-all-egress"
     }
 }
+
+# ==================================
+# IAM Role for ECS Task Execution
+# ==================================
+resource "aws_iam_role" "ecs_task_execution" {
+    name = "${var.project_name}-${var.environment}-ecs-task-execution-role"
+
+    assume_role_policy = jsonencode({
+        Version = "2012-10-17"
+        Statement = [
+            {
+                Action = "sts:AssumeRole"
+                Effect = "Allow"
+                Principal = {
+                    Service = "ecs-tasks.amazonaws.com"
+                }
+            }
+        ]
+    })
+
+    tags = var.common_tags
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_task_execution_policy" {
+    role = aws_iam_role.ecs_task_execution.name
+    policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+# Additional policy for Secrets Manager and SSM Parameter Store access
+resource "aws_iam_role_policy" "ecs_task_execution_secrets" {
+    name = "${var.project_name}-${var.environment}-ecs-task-execution-secrets-policy"
+    role = aws_iam_role.ecs_task_execution.id
+
+    policy = jsonencode({
+        Version = "2012-10-17"
+        Statement = [
+            {
+                Effect = "Allow"
+                Action = [
+                    "secretsmanager:GetSecretValue",
+                    "kms:Decrypt"
+                ]
+                Resource = [
+                    "arn:aws:secretsmanager:*:*:secret:${var.project_name}/${var.environment}/*",
+                    "arn:aws:kms:*:*:key/*"
+                ]
+            },
+            {
+                Effect = "Allow"
+                Action = [
+                    "ssm:GetParameters",
+                    "ssm:GetParameter",
+                    "ssm:GetParametersByPath"
+                ]
+                Resource = [
+                    "arn:aws:ssm:*:*:parameter/${var.project_name}/${var.environment}/*"
+                ]
+            }
+        ]
+    })
+}
+
+# ============================================
+# IAM Role for ECS Task (Application Runtime)
+# ============================================
+resource "aws_iam_role" "ecs_task" {
+    name = "${var.project_name}-${var.environment}-ecs-task-role"
+
+    assume_role_policy = jsonencode({
+        Version = "2012-10-17"
+        Statement = [
+        {
+            Action = "sts:AssumeRole"
+            Effect = "Allow"
+            Principal = {
+                Service = "ecs-tasks.amazonaws.com"
+            }
+        }
+        ]
+    })
+
+    tags = var.common_tags
+}
+
+# Policy for application runtime permissions
+resource "aws_iam_role_policy" "ecs_task_policy" {
+    name = "${var.project_name}-${var.environment}-ecs-task-policy"
+    role = aws_iam_role.ecs_task.id
+
+    policy = jsonencode({
+        Version = "2012-10-17"
+        Statement = [
+            {
+                Effect = "Allow"
+                Action = [
+                    "ssm:GetParameter",
+                    "ssm:GetParameters",
+                    "ssm:GetParametersByPath"
+                ]
+                Resource = [
+                    "arn:aws:ssm:*:*:parameter/${var.project_name}/${var.environment}/*"
+                ]
+            },
+            {
+                Effect = "Allow"
+                Action = [
+                    "secretsmanager:GetSecretValue"
+                ]
+                Resource = [
+                    "arn:aws:secretsmanager:*:*:secret:${var.project_name}/${var.environment}/*"
+                ]
+            },
+            {
+                Effect = "Allow"
+                Action = [
+                    "s3:GetObject",
+                    "s3:PutObject",
+                    "s3:ListBucket"
+                ]
+                Resource = [
+                    "arn:aws:s3:::${var.project_name}-${var.environment}-*",
+                    "arn:aws:s3:::${var.project_name}-${var.environment}-*/*"
+                ]
+            },
+            {
+                Effect = "Allow"
+                Action = [
+                    "kms:Decrypt",
+                    "kms:GenerateDataKey"
+                ]
+                Resource = [
+                    "arn:aws:kms:*:*:key/*"
+                ]
+                Condition = {
+                    StringEquals = {
+                        "kms:ViaService" = [
+                            "s3.*.amazonaws.com",
+                            "secretsmanager.*.amazonaws.com",
+                            "ssm.*.amazonaws.com"
+                        ]
+                    }
+                }
+            }
+        ]
+    })
+}
+
+# Policy for ECS Exec (if enabled)
+resource "aws_iam_role_policy" "ecs_exec_policy" {
+    name = "${var.project_name}-${var.environment}-ecs-exec-policy"
+    role = aws_iam_role.ecs_task.id
+
+    policy = jsonencode({
+        Version = "2012-10-17"
+        Statement = [
+            {
+                Effect = "Allow"
+                Action = [
+                    "ssmmessages:CreateControlChannel",
+                    "ssmmessages:CreateDataChannel",
+                    "ssmmessages:OpenControlChannel",
+                    "ssmmessages:OpenDataChannel"
+                ]
+                Resource = "*"
+            },
+            {
+                Effect = "Allow"
+                Action = [
+                    "logs:DescribeLogGroups",
+                    "logs:CreateLogStream",
+                    "logs:DescribeLogStreams",
+                    "logs:PutLogEvents"
+                ]
+                Resource = "*"
+            }
+        ]
+    })
+}
