@@ -32,3 +32,8 @@ variable "common_tags" {
     description = "Common tags to apply to all resources"
     type        = map(string)
 }
+
+variable "log_retention_days" {
+    type        = number
+    description = "CloudWatch log retention in days"
+}
