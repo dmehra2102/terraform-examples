@@ -113,11 +113,6 @@ variable "parameter_store_paths" {
     type        = list(string)
 }
 
-variable "s3_bucket_arns" {
-    description = "List of S3 bucket ARNs"
-    type        = list(string)
-}
-
 variable "enable_execute_command" {
     description = "Enable ECS Exec"
     type        = bool

@@ -66,6 +66,22 @@ resource "aws_ecs_task_definition" "main" {
                 }
             ]
 
+            # Environment variables from SSM Parameter Store
+            secrets = concat(
+                [
+                    for path in var.parameter_store_paths : {
+                        name      = replace(upper(path), "/", "_")
+                        valueFrom = "arn:aws:ssm:${var.aws_region}:${var.account_id}:parameter${path}"
+                    }
+                ],
+                var.database_secret_arn != "" ? [
+                    {
+                        name      = "DB_CONNECTION_STRING"
+                        valueFrom = var.database_secret_arn
+                    }
+                ] : []
+            )
+
             environment = [
                 {
                     name  = "ENVIRONMENT"

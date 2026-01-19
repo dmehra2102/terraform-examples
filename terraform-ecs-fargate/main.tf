@@ -79,6 +79,5 @@ module "ecs" {
     log_retention_days          = var.log_retention_days
     database_secret_arn         = var.database_secret_arn
     parameter_store_paths       = var.parameter_store_paths
-    s3_bucket_arns              = var.s3_bucket_arns
     enable_execute_command      = var.enable_execute_command
 }

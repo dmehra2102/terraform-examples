@@ -54,18 +54,17 @@ This repository contains a complete, modular Terraform configuration for deployi
 
 ### Key Features
 
-- ✅ **High Availability**: Deployed across 3 Availability Zones
-- ✅ **Auto Scaling**: CPU and Memory-based autoscaling (2-10 tasks)
+- ✅ **High Availability**: Deployed across 2 or 3 Availability Zones
+- ✅ **Auto Scaling**: CPU and Memory-based autoscaling (2-8 tasks)
 - ✅ **Security**: Least privilege IAM, private subnets, security groups
 - ✅ **Observability**: CloudWatch Logs, Container Insights, VPC Flow Logs
 - ✅ **Zero-Downtime Deployments**: Circuit breaker, health checks
-- ✅ **Cost Optimization**: Fargate Spot capacity providers
 - ✅ **Production Ready**: SSL/TLS, logging, monitoring, backups
 
 ## Prerequisites
 
 - AWS Account with appropriate permissions
-- Terraform >= 1.6.0
+- Terraform >= 1.5.0
 - AWS CLI configured
 - ACM Certificate for HTTPS (must be in the same region)
 - Docker for building container images
