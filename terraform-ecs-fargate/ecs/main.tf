@@ -49,8 +49,8 @@ resource "aws_ecs_task_definition" "main" {
     requires_compatibilities = ["FARGATE"]
     cpu                      = var.task_cpu
     memory                   = var.task_memory
-    execution_role_arn       = data.aws_iam_role.ecs_task_execution.arn
-    task_role_arn            = data.aws_iam_role.ecs_task.arn
+    execution_role_arn       = var.ecs_task_execution_role_arn
+    task_role_arn            = var.ecs_task_role_arn
 
     container_definitions    = jsonencode([
         {
@@ -98,13 +98,13 @@ resource "aws_ecs_task_definition" "main" {
             ]
 
             # Health check configuration
-            healthCheck = {
-                command     = ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:${var.container_port}/health || exit 1"]
-                interval    = 30
-                timeout     = 5
-                retries     = 3
-                startPeriod = 60
-            }
+            # healthCheck = {
+            #     command     = ["CMD-SHELL", "curl -f http://localhost:${var.container_port}/health || exit 1"]
+            #     interval    = 30
+            #     timeout     = 5
+            #     retries     = 3
+            #     startPeriod = 120
+            # }
 
             # Logging configuration
             logConfiguration = {
@@ -136,14 +136,6 @@ resource "aws_ecs_task_definition" "main" {
             Name = "${var.project_name}-${var.environment}-task-definition"
         }
     )
-}
-
-data "aws_iam_role" "ecs_task_execution" {
-    name = "${var.project_name}-${var.environment}-ecs-task-execution-role"
-}
-
-data "aws_iam_role" "ecs_task" {
-    name = "${var.project_name}-${var.environment}-ecs-task-role"
 }
 
 # ============================

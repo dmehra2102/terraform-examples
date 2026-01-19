@@ -58,7 +58,7 @@ resource "aws_subnet" "private" {
 # ============================================
 resource "aws_eip" "nat" {
     count = length(var.availability_zones)
-    domain = "VPC"
+    domain = "vpc"
 
     tags = merge(var.common_tags,{
         Name = "${var.project_name}-${var.environment}-nat-eip-${count.index + 1}"    

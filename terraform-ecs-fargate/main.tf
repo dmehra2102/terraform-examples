@@ -80,4 +80,6 @@ module "ecs" {
     database_secret_arn         = var.database_secret_arn
     parameter_store_paths       = var.parameter_store_paths
     enable_execute_command      = var.enable_execute_command
+    ecs_task_role_arn           = module.security.ecs_task_role_arn
+    ecs_task_execution_role_arn = module.security.ecs_task_execution_role_arn
 }

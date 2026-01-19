@@ -8,7 +8,7 @@ resource "aws_lb" "main" {
     security_groups = [var.alb_security_group_id]
     subnets = var.public_subnet_ids
 
-    enable_deletion_protection = var.environment == "production" ? true: false
+    enable_deletion_protection = false
     enable_http2 = true
     enable_cross_zone_load_balancing = true
     idle_timeout = var.idle_timeout
@@ -47,7 +47,6 @@ resource "aws_lb_target_group" "main" {
     }
 
     deregistration_delay = 30
-    connection_termination = true
 
     stickiness {
         type = "lb_cookie"
@@ -106,6 +105,7 @@ resource "aws_lb_listener" "http" {
 
 resource "aws_s3_bucket" "alb_logs" {
     bucket = "${var.project_name}-${var.environment}-alb-logs-${data.aws_caller_identity.current.account_id}"
+    force_destroy = true
 
     tags = merge(var.common_tags, {
         Name = "${var.project_name}-${var.environment}-alb-logs"

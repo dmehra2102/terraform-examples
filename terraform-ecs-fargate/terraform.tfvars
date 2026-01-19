@@ -55,7 +55,7 @@ scale_out_cooldown  = 60  # 1 minute
 # ============================================
 # CloudWatch Configuration
 # ============================================
-log_retention_days = 15
+log_retention_days = 14
 
 # ============================================
 # ECR Configuration

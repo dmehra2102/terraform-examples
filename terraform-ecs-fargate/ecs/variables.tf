@@ -122,3 +122,13 @@ variable "common_tags" {
     description = "Common tags to apply to all resources"
     type        = map(string)
 }
+
+variable "ecs_task_execution_role_arn" {
+    type = string
+    description = "ARN of ECS task execution role"
+}
+
+variable "ecs_task_role_arn" {
+    type = string
+    description = "ARN of ECS task role"
+}
