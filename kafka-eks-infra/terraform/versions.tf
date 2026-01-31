@@ -26,3 +26,14 @@ terraform {
         dynamodb_table = "terraform-state-lock"
     }
 }
+
+provider "aws" {
+    region = var.aws_region
+    default_tags {
+        tags = {
+            Project     = "kafka-eks-infra"
+            ManagedBy   = "terraform"
+            Environment = var.environment
+        }
+    }
+}
