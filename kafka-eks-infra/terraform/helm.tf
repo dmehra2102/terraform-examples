@@ -51,7 +51,7 @@ resource "helm_release" "aws_lb_controller" {
     name       = "aws-load-balancer-controller"
     repository = "https://aws.github.io/eks-charts"
     chart      = "aws-load-balancer-controller"
-    version    = "1.11.1"
+    version    = "1.14.0"
     namespace  = "kube-system"
 
     values = [
@@ -69,6 +69,63 @@ resource "helm_release" "aws_lb_controller" {
             enableShield = false
             enableWaf    = false
             enableWafv2  = false
+        })
+    ]
+
+    depends_on = [module.eks]
+}
+
+# Install Kubernetes Metrics Server
+resource "helm_release" "metrics_server" {
+    count = var.install_metrics_server ? 1 : 0
+
+    name       = "metrics-server"
+    repository = "https://kubernetes-sigs.github.io/metrics-server/"
+    chart      = "metrics-server"
+    version    = "3.13.0"
+    namespace  = "kube-system"
+
+    values = [
+        yamlencode({
+            replicas = 2
+            
+            resources = {
+                limits = {
+                    cpu    = "100m"
+                    memory = "200Mi"
+                }
+                requests = {
+                    cpu    = "100m"
+                    memory = "200Mi"
+                }
+            }
+
+            podDisruptionBudget = {
+                enabled      = true
+                minAvailable = 1
+            }
+
+            affinity = {
+                podAntiAffinity = {
+                    preferredDuringSchedulingIgnoredDuringExecution = [
+                        {
+                            weight = 100
+                            podAffinityTerm = {
+                                labelSelector = {
+                                    matchExpressions = [
+                                        {
+                                            key      = "app.kubernetes.io/name"
+                                            operator = "In"
+                                            values   = ["metrics-server"]
+                                        }
+                                    ]
+                                }
+                                topologyKey = "kubernetes.io/hostname"
+                            }
+                        }
+                    ]
+                }
+            }
         })
     ]
 
