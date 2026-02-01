@@ -54,50 +54,23 @@ resource "helm_release" "aws_lb_controller" {
     version    = "1.11.1"
     namespace  = "kube-system"
 
-    set {
-        name  = "clusterName"
-        value = module.eks.cluster_name
-    }
-
-    set {
-        name  = "serviceAccount.create"
-        value = "true"
-    }
-
-    set {
-        name  = "serviceAccount.name"
-        value = "aws-load-balancer-controller"
-    }
-
-    set {
-        name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-        value = module.aws_lb_controller_irsa.iam_role_arn
-    }
-
-    set {
-        name  = "region"
-        value = var.aws_region
-    }
-
-    set {
-        name  = "vpcId"
-        value = module.vpc.vpc_id
-    }
-
-    set {
-        name  = "enableShield"
-        value = "false"
-    }
-
-    set {
-        name  = "enableWaf"
-        value = "false"
-    }
-
-    set {
-        name  = "enableWafv2"
-        value = "false"
-    }
+    values = [
+        yamlencode({
+            clusterName = module.eks.cluster_name
+            serviceAccount = {
+                create = true
+                name   = "aws-load-balancer-controller"
+                annotations = {
+                    "eks.amazonaws.com/role-arn" = module.aws_lb_controller_irsa.iam_role_arn
+                }
+            }
+            region      = var.aws_region
+            vpcId       = module.vpc.vpc_id
+            enableShield = false
+            enableWaf    = false
+            enableWafv2  = false
+        })
+    ]
 
     depends_on = [module.eks]
 }
