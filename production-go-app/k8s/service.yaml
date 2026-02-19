@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: production-go-app-svc
+  labels:
+    app: production-go-app
+  annotations:
+    # This annotation tells the ALB Ingress controller to register the service as a target group
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
+spec:
+  type: ClusterIP
+  selector:
+    app: production-go-app
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080

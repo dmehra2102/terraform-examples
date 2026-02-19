@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: production-go-app-ingress
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-2023-04
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:627002024306:certificate/7e2d8d2c-a290-4f2d-926d-3923e1cc0236
+    alb.ingress.kubernetes.io/ssl-redirect: "443" # forces HTTP → HTTPS
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/healthcheck-path: /healthz
+    alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+spec:
+  rules:
+    - host: deepanshu-mehra.shop
+      http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: production-go-app-svc
+                port:
+                  number: 80
