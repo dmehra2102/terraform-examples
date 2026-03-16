@@ -28,3 +28,15 @@ module "vpc" {
   log_retention_days    = var.log_retention_days
   cluster_name          = "${local.name_prefix}-eks"
 }
+
+# =============================================================================
+# MODULE: SECURITY (KMS, IAM foundations, Secrets Manager baseline)
+# =============================================================================
+module "security" {
+  source = "./modules/security"
+
+  name_prefix      = local.name_prefix
+  aws_region       = local.region
+  account_id       = local.account_id
+  eks_cluster_name = "${local.name_prefix}-eks"
+}
