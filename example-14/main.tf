@@ -40,3 +40,32 @@ module "security" {
   account_id       = local.account_id
   eks_cluster_name = "${local.name_prefix}-eks"
 }
+
+# =============================================================================
+# MODULE: EKS
+# =============================================================================
+
+module "eks" {
+  source = "./modules/eks"
+
+  name_prefix    = local.name_prefix
+  cluster_name   = "${local.name_prefix}-eks"
+  cluster_version = var.cluster_version
+  aws_region     = local.region
+  account_id     = local.account_id
+
+  vpc_id             = module.vpc.vpc_id
+  private_subnet_ids = module.vpc.private_subnet_ids
+  public_subnet_ids  = module.vpc.public_subnet_ids
+
+  cluster_endpoint_public_access       = var.cluster_endpoint_public_access
+  cluster_endpoint_public_access_cidrs = var.cluster_endpoint_public_access_cidrs
+
+  node_groups       = var.node_groups
+  enable_karpenter  = var.enable_karpenter
+  karpenter_version = var.karpenter_version
+
+  kms_key_arn = module.security.eks_kms_key_arn
+
+  depends_on = [module.vpc, module.security]
+}
